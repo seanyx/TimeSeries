@@ -16,6 +16,7 @@ source('~/Documents/TimeSeries/createNetCDF/phaseshiftest.R', chdir = TRUE) #
 # close.nc(data)
 # 
 # save(lat,lon,sst,anom,anomfil,file='SSTXiao.RData')
+
 load('SSTXiao.RData')
 
 ndim=dim(sst)
@@ -64,3 +65,19 @@ outline[which(outline[,]==1,arr.ind=TRUE)]=NA
 
 image(lon,lat,corr[,,1],col=cols,zlim=c(-1,1))
 image(lon,lat,outline,col='black',add=TRUE) ## add continents for reference
+
+## take one time series for filtering
+tt=seq(from=1854,to=2014,length=nt)
+yy=anom[ini_ind[1],ini_ind[2],1,]
+dev.new()
+plot(tt,yy,type='l',axes=F)
+axis(1,at=pretty(range(tt),n=10))
+axis(2,at=pretty(range(yy)))
+
+## filter the time according to the range of periodicity interested in
+source('~/Documents/TimeSeries/PaleoAnalyze/filterPaleo.R')
+temp=as.data.frame(cbind(tt,yy))
+names(temp)=c('t','y')
+templ=list(temp)
+fil=c(0.1,1)
+tempfil=bwfilter(templ,cut=fil,type='pass',PLOT=T)
