@@ -18,12 +18,25 @@ fitPhase<-function(y1,y2,N,ReAll=F) {
 		y2m=phshift(y2,pd=phrange[i])
 		ycor[i]=cor(y1,y2m)
 	}
-	ycormax=max(ycor)
-	ind=which(ycor==ycormax)
+
+	#         ycormax=max(ycor)
+	#         ycormin=min(ycor)
+	#         if(abs(ycormax)>abs(ycormin)) {
+	#                 ind=which(ycor==ycormax)
+	#                 ymax=ycormax
+	#         }
+	#         if(abs(ycormax)<abs(ycormin)) {
+	#                 ind=which(ycor==ycormin)
+	#                 ymax=ycormin
+	#         }
+
+	##### only pick the positive extreme value
+	ind=which.max(ycor)
+	ymax=ycor[ind]
 	phmax=phrange[ind]
 	if(any(phmax==1)) phmax=1
 	
-	if (!ReAll) return(list(phmax,ycormax))
+	if (!ReAll) return(list(phmax,ymax))
 	
 	if (ReAll) return(list(phmax,ycormax,phrange,ycor))	
 	

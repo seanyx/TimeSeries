@@ -1,2 +1,5 @@
 *.RData
 *.png
+*.nc
+*.pvsm
+*.pdf
