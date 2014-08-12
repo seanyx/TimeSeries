@@ -7,26 +7,26 @@ inso=read.table("~/Documents/TimeSeries/ClimateModels/VDP/orbit91",skip=3)[1:101
 inso=rev(inso)
 inso=(inso-mean(inso))/sd(inso)
 
-f1=function(a,b,c,x,y,t,D) -b*x^3+a*x-y+c+D*rnorm(1)
+f1=function(a,b,c,x,y,t,D,h) -b*x^3+a*x-y+c+D*sqrt(h)*rnorm(1)
 f2=function(omega,A,x,t,inso,DC) omega^2*x-A*(approx(1:101,inso,t/1000,rule=2)[[2]]+DC)
 
 ## input parameters
 ## A and a together control the amount of frequency modulation
 ## b mostly controls the amplitude
 ## increase a will also increase the natural periodicity
-h=10
+h=1
 fc=1/1500
 omega=2*pi*fc
 A=2.1e-6
 x0=0.001
 y0=0.001
-a=0.02
+a=0.1
 b=1
 c=0
 D=1e-3
 DC=0.6
 
-N=10000
+N=100000
 xn=vector(length=N+1)
 yn=vector(length=N+1)
 
@@ -35,10 +35,10 @@ yn[1]=y0
 
 for (i in 1:N) {
 	
-	m=h*c(f1(a,b,c,xn[i],yn[i],i*h,D), f2(omega,A,xn[i],i*h,inso,DC))
-	n=h*c(f1(a,b,c,xn[i]+1/2*m[1],yn[i]+1/2*m[2],i*h+1/2*h,D), f2(omega,A,xn[i]+1/2*m[1],i*h+1/2*h,inso,DC))
-	j=h*c(f1(a,b,c,xn[i]+1/2*n[1],yn[i]+1/2*n[2],i*h+1/2*h,D), f2(omega,A,xn[i]+1/2*n[1],i*h+1/2*h,inso,DC))
-	k=h*c(f1(a,b,c,xn[i]+j[1],yn[i]+j[2],i*h+h,D), f2(omega,A,xn[i]+j[1],i*h+h,inso,DC))
+	m=h*c(f1(a,b,c,xn[i],yn[i],i*h,D,h), f2(omega,A,xn[i],i*h,inso,DC))
+	n=h*c(f1(a,b,c,xn[i]+1/2*m[1],yn[i]+1/2*m[2],i*h+1/2*h,D,h), f2(omega,A,xn[i]+1/2*m[1],i*h+1/2*h,inso,DC))
+	j=h*c(f1(a,b,c,xn[i]+1/2*n[1],yn[i]+1/2*n[2],i*h+1/2*h,D,h), f2(omega,A,xn[i]+1/2*n[1],i*h+1/2*h,inso,DC))
+	k=h*c(f1(a,b,c,xn[i]+j[1],yn[i]+j[2],i*h+h,D,h), f2(omega,A,xn[i]+j[1],i*h+h,inso,DC))
 	
 	xn[i+1]=xn[i]+1/6*(m[1]+2*n[1]+2*j[1]+k[1])
 	yn[i+1]=yn[i]+1/6*(m[2]+2*n[2]+2*j[2]+k[2])

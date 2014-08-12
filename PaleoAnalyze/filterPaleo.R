@@ -1,7 +1,6 @@
 bwfilter<-function(data,cut,type='low',PLOT=T) {
 	### butterworth filter function
 	library(signal)
-	source('http://www.unc.edu/~yangxiao/PaleoR/PaleoSearch/xyrange.R')
 	dt=mean(diff(data[[1]][,1]))
 	fNy=.5/dt
 	N=length(data)
@@ -30,15 +29,16 @@ bwfilter<-function(data,cut,type='low',PLOT=T) {
 		 fp=cut
 		 fil.but=butter(4,fp[2]/fNy,type='low',plane='z')
 		 datadm=data
+		 m = rep( 0, N )
 		 for (i in 1:N) {
-			 m=mean(data[[i]][,2])
-			 datadm[[i]][,2]=data[[i]][,2]-m
+			 m[i]=mean(data[[i]][,2])
+			 datadm[[i]][,2]=data[[i]][,2]-m[i]
 			 dataout[[i]]=filtfilt(fil.but,datadm[[i]][,2])
 			 }
 			 fil.but=butter(4,fp[1]/fNy,type='high',plane='z')
 		 for (i in 1:N) {
 			 dataout[[i]]=data.frame(t=data[[1]][,1],y=filtfilt(fil.but,dataout[[i]]))
-			 dataout[[i]][,2]=dataout[[i]][,2]+m
+			 dataout[[i]][,2]=dataout[[i]][,2]+m[i]
 			 rest=data[[i]][,2]-dataout[[i]]$y
 			 res[[i]]=data.frame(t=data[[1]][,1],y=rest)
 			 }
